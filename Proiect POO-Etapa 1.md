@@ -1,7 +1,5 @@
-# Proiect POO-Etapa 1
-**Numele proiectului**: Cafenea
-**Tema aleasă**: gestionarea unei cafenele
-**Clase utilizate**:
+# Proiect POO- Cafenea☕
+Am ales să gestionez o **cafenea**. Am utilizat următoarele **clase**: 
 - clasa **String**-pentru șiruri de caractere
 - clasa **Coffee**-pentru a memora detalii despre cafea(tipul de cafea, mărimea cafelei, prețul cafelei)
 - clasa **Pastry**-pentru a memora detalii despre un produs de patiserie(tipul de produs, prețul produsului)
