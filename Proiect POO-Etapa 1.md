@@ -3,12 +3,11 @@ Am ales să gestionez o **cafenea**. Am utilizat următoarele **clase**:
 - clasa **String**-pentru șiruri de caractere
 - clasa **Coffee**-pentru a memora detalii despre cafea(tipul de cafea, mărimea cafelei, prețul cafelei)
 - clasa **Pastry**-pentru a memora detalii despre un produs de patiserie(tipul de produs, prețul produsului)
-- clasa **Product**-pentru a memora dacă produsul ales a fi comandat este de tip Coffee sau de tip Pastry
-- clasa **Order**-pentru a comanda un produs de tip Product
-- clasa **Cafenea** -reține comanda, ocupația clientului, plata comenzii
+- clasa **Tea**-pentru a memora detalii despre ceai(tipul de ceai, prețul ceaiului)
+- clasa **Order**-pentru a comanda un produs de tip Coffee si/sau de tip Pastry si/sau de tip Tea
 
 **Funcționalități** 
-- capabilă să citească o listă de produse(un fel de cafea sau un produs de patiserie)
+- capabilă să citească o listă de produse(un fel de cafea/un produs de patiserie/un fel de ceai)
 - capabilă să creeze o comandă
 - capabilă să afișeze cât are de plătit clientul
 - capabilă să ofere o reducere de 15% pentru studenți
