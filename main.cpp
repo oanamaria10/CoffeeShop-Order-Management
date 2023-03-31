@@ -1,5 +1,6 @@
 #include<iostream>
-#include<cstring>
+//#include<string>
+#include <cstring>
 using namespace std;
 
 class String{
@@ -9,7 +10,8 @@ private:
 public:
     String(){ data=nullptr, Size=0 ;}
     ~String(){
-        delete[]data;
+        if(data!= nullptr)
+           delete[]data;
     }
     String(const char*string_literal){
         Size=strlen(string_literal);
@@ -47,12 +49,18 @@ public:
     }
     friend istream &operator>>(istream &in, String &sir)
     {
-        in>>sir.Size;
-        in>>sir.data;
+        char s[1000];
+        in>>s;
+        if(sir.data!= nullptr)
+            delete[] sir.data;
+        sir.data=new char[sizeof(s)];
+        strcpy(sir.data, s);
+        sir.Size=sizeof(s);
         return in;
     }
     friend ostream &operator<<(ostream &out, const String &sir) {
-        out<<sir.data;
+        if(sir.data!= nullptr)
+            out<<sir.data;
         return out;
     }
 };
@@ -64,7 +72,7 @@ private:
     double CoffeePrice;
 public:
     void setCoffeeType(String coffee_type){
-        CoffeeType=coffee_type;
+        CoffeeType = coffee_type;
     }
     String getCoffeeType(){
         return CoffeeType;
@@ -81,10 +89,21 @@ public:
     double getCoffeePrice(){
         return CoffeePrice;
     }
+    Coffee(){
+        CoffeeType= "";
+        CoffeeSize= "";
+        CoffeePrice=0;
+    }
     Coffee(String coffee_type, String coffee_size, double coffee_price){
         CoffeeType=coffee_type;
         CoffeeSize=coffee_size;
         CoffeePrice=coffee_price;
+    }
+    ///copy constructor
+    Coffee(const Coffee &other){
+        this->CoffeeType=other.CoffeeType;
+        this->CoffeeSize=other.CoffeeSize;
+        this->CoffeePrice=other.CoffeePrice;
     }
     friend istream &operator>>(istream &in, Coffee &coffee)
     {
@@ -93,12 +112,13 @@ public:
     }
     friend ostream &operator<<(ostream &out,const Coffee &coffee)
     {
-        out<<coffee.CoffeeType<<coffee.CoffeeSize<<coffee.CoffeePrice;
+        out<<coffee.CoffeeType<<" "<<coffee.CoffeeSize<<" "<<coffee.CoffeePrice<<"\n";
         return out;
     }
     void afisare()
     {
-        cout<<CoffeeType<<" "<<CoffeeSize<<" "<<CoffeePrice;
+        cout<<"Sortiment de cafea: ";
+        cout<<CoffeeType<<" "<<CoffeeSize<<" "<<CoffeePrice<<"\n";
     }
 };
 class Pastry{
@@ -122,254 +142,296 @@ public:
         PastryProduct=pastry_product;
         PastryPrice=pastry_price;
     }
+    Pastry(){
+        PastryProduct="";
+        PastryPrice=0;
+    }
     friend istream &operator>>(istream &in, Pastry &pastry)
     {
-        in>>pastry;
+        in>>pastry.PastryProduct>>pastry.PastryPrice;
         return in;
     }
     friend ostream &operator<<(ostream &out,const Pastry &pastry)
     {
-        out<<pastry<<" ";
+        out<<pastry.PastryProduct<<" "<<pastry.PastryPrice<<"\n";
         return out;
+    }
+    void citire()
+    {
+        cout<<"Produs patiserie: ";
+        cin>>PastryProduct>>PastryPrice;
     }
     void afisare()
     {
-        cout<<PastryProduct<<" "<<PastryPrice;
+        cout<<"Produs de patiserie: "<<PastryProduct<<" "<<PastryPrice<<"\n";
     }
 };
+class Tea{
+private:
+    String TeaProduct;
+    double TeaPrice;
+public:
+    void setTeaProduct(String tea_product){
+        TeaProduct=tea_product;
+    }
+    String getTeaProduct(){
+        return TeaProduct;
+    }
+    void setTeaPrice(double tea_price){
+        TeaPrice=tea_price;
+    }
+    double getTeaPrice(){
+        return TeaPrice;
+    }
+    Tea(String tea_product, double tea_price){
+        TeaProduct=tea_product;
+        TeaPrice=tea_price;
+    }
+    Tea(){
+        TeaProduct="";
+        TeaPrice=0;
+    }
+    friend istream &operator>>(istream &in, Tea &tea)
+    {
+        in>>tea.TeaProduct>>tea.TeaPrice;
+        return in;
+    }
+    friend ostream &operator<<(ostream &out,const Tea &tea)
+    {
+        out<<tea.TeaProduct<<" "<<tea.TeaPrice<<"\n";
+        return out;
+    }
+    void citire()
+    {
+        cout<<"Ceai: ";
+        cin>>TeaProduct>>TeaPrice;
+    }
+    void afisare()
+    {
+        cout<<"Sortiment de ceai: "<<TeaProduct<<" "<<TeaPrice<<"\n";
+    }
+};
+/*
+class Vector_produs{
+private:
+    int size;
+    Coffee *data;
+public:
+    Vector_produs() {
+        data= nullptr;
+        size = 0;
+    }
+    Vector_produs(int k, Coffee &cof){
+        size=k;
+        data=new Coffee[size];
+        for(int i=0;i<k;i++) {
+            data[i].setCoffeeType(cof.getCoffeeType()) ;
+            data[i].setCoffeeSize(cof.getCoffeeSize()) ;
+            data[i].setCoffeePrice(cof.getCoffeePrice());
+        }
+    }
+    ~Vector_produs(){
+        delete []data;
+    }
+    Vector_produs(Vector_produs &coffee)
+    {
+        size=coffee.size;
+        data=new Coffee[coffee.size];
+        for(int i=0;i<size;i++)
+            data[i]=coffee.data[i];
+    }
+    Vector_produs &operator=(const Vector_produs& coffee)
+    {
+        if(coffee.data== nullptr)
+            return *this;
+        for (int i = 0; i < size; i++){
+            data[i].setCoffeeType(coffee.data[i].getCoffeeType())  ;
+        data[i].setCoffeeSize(coffee.data[i].getCoffeeSize())  ;
+        data[i].setCoffeePrice(coffee.data[i].getCoffeePrice()); }
+        return *this;
+    }
+    friend ostream& operator << (ostream& out, const Vector_produs& coffee)
+    {
+        for (int i = 0; i < coffee.size; i++)
+            out << coffee.data[i] << " ";
 
-class Product{
+        return out;
+    }
+    friend istream& operator >> (istream& in, Vector_produs& coffee)
+    {
+        int n = 0;
+        in >> n;
+        if(coffee.data== nullptr)
+            return in;
+        for (int i = 0; i < coffee.size; i++)
+            in >> coffee.data[i];
+        return in;
+    }
+    void addElement(Coffee *element)
+    {
+        Coffee *data1 = nullptr;
+        data1 = new Coffee [size+1];
+        for (int i = 0; i < size; i++)
+            data1[i] = data[i];
+        data1[size].setCoffeeType(element->getCoffeeType())  ;
+        data1[size].setCoffeeSize(element->getCoffeeSize());
+        data1[size].setCoffeePrice(element->getCoffeePrice());
+        if (data != nullptr)
+        {
+            delete[] data;
+            data = nullptr;
+        }
+        data = data1;
+        size++;
+    }
+    void afisare(){
+        for(int i=0 ;i<size ;i++)
+            cout<<data[i].getCoffeeType()<<" "<<data[i].getCoffeeSize()<<" "<<data[i].getCoffeePrice();
+    }
+};
+*/
+class Order{
 private:
     Coffee *coffee;
     Pastry *pastry;
-public:
-    Product(){
-        coffee=nullptr,pastry=nullptr;
-    }
-    Product &operator=(const Product &product)
-    {
-        if(this!=&product)
-        {
-            coffee=product.coffee;
-            pastry=product.pastry;
-        }
-        return *this;
-    }
-    bool alloc_coffee(Coffee *coffee_product){
-        return coffee_product!=nullptr;
-    }
-    bool alloc_pastry(Pastry *pastry_product){
-        return pastry_product!=nullptr;
-    }
-    void setcoffee(Coffee *coffee_product){
-        coffee=coffee_product;
-    }
-    Coffee getcoffee(){
-        return *coffee;
-    }
-    void setpastry(Pastry *pastry_product){
-        pastry=pastry_product;
-    }
-    Pastry getpastry(){
-        return *pastry;
-    }
-    friend istream &operator>>(istream &in, Product &product)
-    {
-        in>>product;
-        return in;
-    }
-    friend ostream &operator<<(ostream &out,const Product &product)
-    {
-        out<<product<<" ";
-        return out;
-    }
-};
-class Order{
-private:
-    int Size;
-    Product *product;
-public:
-    Order(){
-        Size=0;
-        product=nullptr;
-    }
-    Order(int other_Size, Product other_product){
-         Size=other_Size;
-         product=new Product[other_Size];
-         for(int i=0;i<other_Size;i++)
-            product[i]=other_product;
-    }
-    ~Order()
-    {
-        if(product!=nullptr)
-            delete []product;
-        product=nullptr;
-    }
-    Order(const Order &other_product)
-    {
-        Size=other_product.Size;
-        product=new Product[other_product.Size];
-        for(int i=0;i<Size;i++)
-            product[i]=other_product.product[i];
-    }
-    bool allocationOrder(int other_Size)
-    {
-        if(product!=nullptr)
-        {
-            delete[] product;
-            product=nullptr;
-        }
-        Size=other_Size;
-        if(Size!=0)
-            product=new Product[Size];
-        return product!=nullptr;
-    }
-    Order &operator=(const Order &other_product)
-    {
-        if(allocationOrder(other_product.Size)==false)
-            return *this;
-        for(int i=0;i<Size;i++)
-            product[i]=other_product.product[i];
-        return *this;
-    }
-    friend istream &operator>>(istream &in, Order &other_product)
-    {
-        int other_size;
-        in>>other_size;
-        if(other_product.allocationOrder(other_size)==false)
-            return in;
-        for(int i=0;i<other_product.Size;i++)
-            in>>other_product.product[i];
-        return in;
-    }
-    friend ostream &operator<<(ostream &out,const Order &other_product)
-    {
-        for(int i=0;i<other_product.Size;i++)
-            out<<other_product.product[i]<<" ";
-        return out;
-    }
-    void add_coffee(Coffee &one_product)
-    {
-        if(&product->alloc_coffee){
-        Product *new_product=nullptr;
-        new_product=new Product[Size+1];
-        for(int i=0;i<Size;i++)
-            new_product[i]=product[i];
-        new_product[Size].setcoffee(&one_product);
-        if(product!=nullptr)
-        {
-            delete[] product;
-            product=nullptr;
-        }
-        product=new_product;
-        Size++;
-        }
-    }
-    void add_pastry(Pastry &one_product)
-    {
-        if(&product->alloc_pastry){
-        Product *new_product=nullptr;
-        new_product=new Product[Size+1];
-        for(int i=0;i<Size;i++)
-            new_product[i]=product[i];
-        new_product[Size].setpastry(&one_product);
-        if(product!=nullptr)
-        {
-            delete[] product;
-            product=nullptr;
-        }
-        product=new_product;
-        Size++;
-        }
-    }
-};
-class Cafenea{
-private:
-    Order order;
+    Tea *tea;
     String client_occupation;
     double plata;
 public:
-    Cafenea(Order _order, String _client_occupation, double _plata){
-        order=_order;
-        client_occupation=_client_occupation;
-        plata=_plata;
+    Order(){
+        coffee= nullptr;
+        pastry= nullptr;
+        tea=nullptr;
+        client_occupation= "";
+        plata=0;
     }
-    void setorder(Order _order){
-        order=_order;
-    }
-    Order getorder(){
-        return order;
-    }
-    void setclient_occupation(String _client_occupation){
-        client_occupation=_client_occupation;
+    void setclient_occupation(String client_occupation){
+        this->client_occupation=client_occupation;
     }
     String getclient_occupation(){
         return client_occupation;
     }
-    void setplata(double _plata){
-        plata=_plata;
+    void setcoffee(Coffee *coffee){
+        this->coffee=coffee;
     }
-    double getplata(){
-        return plata;
+    Coffee getcoffee(){
+        return *coffee;
     }
-    void ClientOrdering(){
-        cout<<"I would like to order "<<order<<"\n";
+    void setpastry(Pastry *pastry){
+        this->pastry=pastry;
+    }
+    Pastry getpastry(){
+        return *pastry;
+    }
+    void settea(Tea *tea){
+        this->tea=tea;
+    }
+    Tea gettea(){
+        return *tea;
+    }
+    void Ordering(){
+        cout<<"What would you like to order?"<<"\n";
+        if(coffee!=nullptr) cout<<"I would like to order one "<<coffee->getCoffeeSize()<<" "<<coffee->getCoffeeType()<<"\n";
+        if(pastry!=nullptr) cout<<"I would like to order one "<<pastry->getPastryProduct()<<"\n";
+        if(tea!=nullptr) cout<<"I would like to order one "<<tea->getTeaProduct()<<"\n";
     }
     void Paying(){
+        if(coffee!=nullptr) plata+=coffee->getCoffeePrice();
+        if(pastry!=nullptr) plata+=pastry->getPastryPrice();
+        if(tea!=nullptr) plata+=tea->getTeaPrice();
         cout<<"You have to pay "<<plata<<" lei"<<"\n";
     }
     void PayingDiscount(){
         if(client_occupation.gasire_subsir("Student"))
             cout<<"Because you are a student, you have a discount of 15% and your total is "<<plata-plata*15/100<<" lei"<<"\n";
-        else cout<<"Sorry, you cannot have a discount";
-    }
-    friend istream &operator>>(istream &in, Cafenea &var)
-    {
-        in>>var.order>>var.client_occupation>>var.plata;
-        return in;
-    }
-    friend ostream &operator<<(ostream &out, const Cafenea &var)
-    {
-        out<<var.order<<var.client_occupation<<var.plata;
-        return out;
+        else cout<<"Sorry, you cannot have a discount"<<"\n";
     }
 };
 
 int main()
 {
-    Coffee espresso1=Coffee("Espresso","Short",5);
-    Coffee espresso2=Coffee("Espresso","Double",7);
+    //initializare obiecte tip Coffee
+    Coffee espresso1=Coffee("Espresso","Short",5); //folosim constructorul prin parametri
+    Coffee espresso2=Coffee(espresso1); //folosim copy constructor
+    espresso2.setCoffeeSize("Double"); //folosim setteri
+    espresso2.setCoffeePrice(7);
     Coffee americano1=Coffee("Americano","Short",6);
-    Coffee americano2=Coffee("Americano","Double",8);
+    Coffee americano2=Coffee(americano1);
+    americano2.setCoffeeSize("Double");
+    americano2.setCoffeePrice(8);
     Coffee cappuccino1=Coffee("Cappuccino","Small",6);
-    Coffee cappuccino2=Coffee("Cappuccino","Medium",8);
-    Coffee cappuccino3=Coffee("Cappuccino","Large",10);
+    Coffee cappuccino2=Coffee(cappuccino1);
+    cappuccino2.setCoffeeSize("Medium");
+    cappuccino2.setCoffeePrice(8);
+    Coffee cappuccino3=Coffee(cappuccino1);
+    cappuccino3.setCoffeeSize("Large");
+    cappuccino3.setCoffeePrice(10);
     Coffee latte1=Coffee("Caffe Latte","Small",7);
-    Coffee latte2=Coffee("Caffe Latte","Medium",9);
-    Coffee latte3=Coffee("Caffe Latte","Large",11);
-    Coffee ice_coffee1=Coffee("Ice Coffee","Small",8);
-    ice_coffee1.setCoffeePrice(7);
-    Coffee ice_coffee2=Coffee("Ice Coffee","Medium",10);
-    ice_coffee1.setCoffeePrice(9);
-    Coffee ice_coffee3=Coffee("Ice Coffee","Large",12);
-    ice_coffee1.setCoffeePrice(11);
-    Pastry croissant=Pastry("Croissant", 5);
-    Pastry croissant_cioco=Pastry("Croissant with Nutella",6);
-    Pastry cookie=Pastry("Cookie",5);
-    Pastry muffin=Pastry("Muffin",6);
+    Coffee latte2=Coffee(latte1);
+    latte2.setCoffeeSize("Medium");
+    latte2.setCoffeePrice(9);
+    Coffee latte3=Coffee(latte1);
+    latte3.setCoffeeSize("Large");
+    latte3.setCoffeePrice(11);
+    Coffee ice_coffee1=Coffee(); //constructor fara parametri
+    ice_coffee1.setCoffeeType("Ice Coffee");
+    ice_coffee1.setCoffeeSize("Regular");
+    ice_coffee1.setCoffeePrice(cappuccino2.getCoffeePrice()); //getteri
+
+    //initializare obiecte de tip Pastry
+    Pastry croissant=Pastry("Croissant", 5); //Constructor cu parametri
+    Pastry croissant_cioco=Pastry(); //Constructor fara parametri
+    croissant_cioco.setPastryProduct("Croissant with Nutella"); //folosim setteri
+    croissant_cioco.setPastryPrice(6);
+    Pastry cookie=Pastry();
+    cookie.citire(); //folosim functia de citire
+    Pastry muffin=Pastry();
+    cout<<"Alt produs de patiserie: ";
+    cin>>muffin;
+
+    //initializare obiecte de tip Tea
+    Tea tea1=Tea("Black Tea",10); //constructor cu parametri
+    Tea tea2=Tea(); //constructor fara parametri
+    tea2.setTeaProduct("Green Tea"); //setteri
+    tea2.setTeaPrice(tea1.getTeaPrice()); //getteri
+    Tea tea3=Tea();
+    tea3.citire(); //folosim functia de citire
+
+    //afisari
+    ///afisare obiecte de tip Coffee
+    espresso1.afisare(); //folosim metoda de afisare
+    espresso2.afisare();
+    americano1.afisare();
+    americano2.afisare();
+    cappuccino1.afisare();
+    cappuccino2.afisare();
+    cappuccino3.afisare();
+    latte1.afisare();
+    latte2.afisare();
+    latte3.afisare();
+    cout<<"Sortiment de cafea:"<<" "<<ice_coffee1.getCoffeeType()<<" "<<ice_coffee1.getCoffeeSize()<<" "<<ice_coffee1.getCoffeePrice()<<"\n";
+
+    ///afisare obiecte de tip Pastry
+    croissant.afisare(); //folosim metoda de afisare
+    cout<<"Produs de patiserie:"<<" "<<croissant_cioco.getPastryProduct()<<"\n";
+    cookie.afisare();
+    muffin.afisare();
+
+    ///afisare obiecte de tip Tea
+    tea1.afisare(); //metoda de afisare
+    cout<<"Sortiment de ceai: "<<tea2.getTeaProduct()<<"\n";
+    tea3.afisare();
+
+    //construire obiect de tip Order
     Order comanda1=Order();
-    comanda1.add_coffee(espresso1);
-    comanda1.add_coffee(espresso2);
-    comanda1.add_pastry(croissant);
-    Cafenea _comanda1=Cafenea(comanda1,"Student",0);
-    _comanda1.setplata(12);
-    _comanda1.PayingDiscount();
-    Order comanda2=Order();
-    comanda2.add_coffee(cappuccino2);
-    comanda2.add_pastry(muffin);
-    Cafenea _comanda2=Cafenea(comanda2,"Pensionar",0);
-    _comanda2.setplata(14);
-    _comanda2.ClientOrdering();
-    _comanda2.Paying();
-    _comanda2.PayingDiscount();
+    comanda1.setcoffee(&espresso2);
+    comanda1.setpastry(&muffin);
+    comanda1.settea(&tea1);
+    ///comanda1.setcoffee(&espresso1);
+    ///comanda1.setpastry(&cookie);
+    comanda1.setclient_occupation("Student");
+    comanda1.setclient_occupation("Pensionar");
+    comanda1.Ordering();
+    comanda1.Paying();
+    comanda1.PayingDiscount();
 }
