@@ -1,437 +1,496 @@
 #include<iostream>
-#include <cstring>
-
+#include<string>
+#include<vector>
+#include<algorithm>
 using namespace std;
 
-class String{
-private:
-    char *data;
-    int Size;
+//exceptii custom
+class NegativePriceException : public exception {
 public:
-    String(){ data=nullptr, Size=0 ;}
-    ~String(){
-        if(data!= nullptr)
-           delete[]data;
+    const char* what() const throw() {
+        return "Pretul nu poate fi negativ!";
     }
-    String(const char*string_literal){
-        Size=strlen(string_literal);
-        data=new char[Size+1];
-        strcpy(data,string_literal);
+};
+class ProductNotFoundException : public exception {
+public:
+    const char* what() const throw() {
+        return "Produsul nu a fost gasit!";
     }
-    String(const String &sir){
-        Size=sir.Size;
-        data=new char[Size+1];
-        strcpy(data,sir.data);
+};
+class InvalidProductException : public exception  {
+public:
+    const char* what() const throw() {
+        return "Produsul este invalid!";
     }
-    String &operator=(const String &sir)
-    {
-        if(this!= &sir)
-        {
-            delete[] data;
-            Size= sir.Size;
-            data=new char[Size+1];
-            strcpy(data, sir.data);
-        }
-        return *this;
-    }
-    void adaugare_caracter_la_sir(const char*caracter){
-        Size=Size+1;
-        data=new char[Size+1];
-        strcat(data,caracter);
-    }
-    void concatenare_a_doua_siruri(const String &sir){
-        Size=Size+sir.Size;
-        data=new char[Size+1];
-        strcat(data,sir.data);
-    }
-    bool gasire_subsir(const String &sir){
-        strstr(data,sir.data);
-    }
-    friend istream &operator>>(istream &in, String &sir)
-    {
-        char s[1000];
-        in>>s;
-        if(sir.data!= nullptr)
-            delete[] sir.data;
-        sir.data=new char[sizeof(s)];
-        strcpy(sir.data, s);
-        sir.Size=sizeof(s);
-        return in;
-    }
-    friend ostream &operator<<(ostream &out, const String &sir) {
-        if(sir.data!= nullptr)
-            out<<sir.data;
-        return out;
+};
+class EmptyOrderException : public exception {
+public:
+    const char* what() const throw() {
+        return "Comanda nu are produse!";
     }
 };
 
-class Coffee{
-private:
-    String CoffeeType;
-    String CoffeeSize;
-    double CoffeePrice;
+//interfata pentru comenzi
+class OrderInterface{
 public:
-    void setCoffeeType(String coffee_type){
-        CoffeeType = coffee_type;
-    }
-    String getCoffeeType(){
-        return CoffeeType;
-    }
-    void setCoffeeSize(String coffee_size){
-        CoffeeSize=coffee_size;
-    }
-    String getCoffeeSize(){
-        return CoffeeSize;
-    }
-    void setCoffeePrice(double coffee_price){
-        CoffeePrice=coffee_price;
-    }
-    double getCoffeePrice(){
-        return CoffeePrice;
-    }
-    Coffee(){
-        CoffeeType= "";
-        CoffeeSize= "";
-        CoffeePrice=0;
-    }
-    Coffee(String coffee_type, String coffee_size, double coffee_price){
-        CoffeeType=coffee_type;
-        CoffeeSize=coffee_size;
-        CoffeePrice=coffee_price;
-    }
-    ///copy constructor
-    Coffee(const Coffee &other){
-        this->CoffeeType=other.CoffeeType;
-        this->CoffeeSize=other.CoffeeSize;
-        this->CoffeePrice=other.CoffeePrice;
-    }
-    friend istream &operator>>(istream &in, Coffee &coffee)
-    {
-        in>>coffee.CoffeeType>>coffee.CoffeeSize>>coffee.CoffeePrice;
-        return in;
-    }
-    friend ostream &operator<<(ostream &out,const Coffee &coffee)
-    {
-        out<<coffee.CoffeeType<<" "<<coffee.CoffeeSize<<" "<<coffee.CoffeePrice<<"\n";
-        return out;
-    }
-    void afisare()
-    {
-        cout<<"Sortiment de cafea: ";
-        cout<<CoffeeType<<" "<<CoffeeSize<<" "<<CoffeePrice<<"\n";
-    }
+    virtual ~OrderInterface(){}
+    virtual double getTotal()=0;
+    virtual void printTotal()=0;
+    virtual void printOrder()=0;
 };
-class Pastry{
-private:
-    String PastryProduct;
-    double PastryPrice;
-public:
-    void setPastryProduct(String pastry_product){
-        PastryProduct=pastry_product;
-    }
-    String getPastryProduct(){
-        return PastryProduct;
-    }
-    void setPastryPrice(double pastry_price){
-        PastryPrice=pastry_price;
-    }
-    double getPastryPrice(){
-        return PastryPrice;
-    }
-    Pastry(String pastry_product, double pastry_price){
-        PastryProduct=pastry_product;
-        PastryPrice=pastry_price;
-    }
-    Pastry(){
-        PastryProduct="";
-        PastryPrice=0;
-    }
-    friend istream &operator>>(istream &in, Pastry &pastry)
-    {
-        in>>pastry.PastryProduct>>pastry.PastryPrice;
-        return in;
-    }
-    friend ostream &operator<<(ostream &out,const Pastry &pastry)
-    {
-        out<<pastry.PastryProduct<<" "<<pastry.PastryPrice<<"\n";
-        return out;
-    }
-    void citire()
-    {
-        cout<<"Produs patiserie: ";
-        cin>>PastryProduct>>PastryPrice;
-    }
-    void afisare()
-    {
-        cout<<"Produs de patiserie: "<<PastryProduct<<" "<<PastryPrice<<"\n";
-    }
-};
-class Tea{
-private:
-    String TeaProduct;
-    double TeaPrice;
-public:
-    void setTeaProduct(String tea_product){
-        TeaProduct=tea_product;
-    }
-    String getTeaProduct(){
-        return TeaProduct;
-    }
-    void setTeaPrice(double tea_price){
-        TeaPrice=tea_price;
-    }
-    double getTeaPrice(){
-        return TeaPrice;
-    }
-    Tea(String tea_product, double tea_price){
-        TeaProduct=tea_product;
-        TeaPrice=tea_price;
-    }
-    Tea(){
-        TeaProduct="";
-        TeaPrice=0;
-    }
-    friend istream &operator>>(istream &in, Tea &tea)
-    {
-        in>>tea.TeaProduct>>tea.TeaPrice;
-        return in;
-    }
-    friend ostream &operator<<(ostream &out,const Tea &tea)
-    {
-        out<<tea.TeaProduct<<" "<<tea.TeaPrice<<"\n";
-        return out;
-    }
-    void citire()
-    {
-        cout<<"Ceai: ";
-        cin>>TeaProduct>>TeaPrice;
-    }
-    void afisare()
-    {
-        cout<<"Sortiment de ceai: "<<TeaProduct<<" "<<TeaPrice<<"\n";
-    }
-};
-/*
-class Vector_produs{
-private:
-    int size;
-    Coffee *data;
-public:
-    Vector_produs() {
-        data= nullptr;
-        size = 0;
-    }
-    Vector_produs(int k, Coffee &cof){
-        size=k;
-        data=new Coffee[size];
-        for(int i=0;i<k;i++) {
-            data[i].setCoffeeType(cof.getCoffeeType()) ;
-            data[i].setCoffeeSize(cof.getCoffeeSize()) ;
-            data[i].setCoffeePrice(cof.getCoffeePrice());
-        }
-    }
-    ~Vector_produs(){
-        delete []data;
-    }
-    Vector_produs(Vector_produs &coffee)
-    {
-        size=coffee.size;
-        data=new Coffee[coffee.size];
-        for(int i=0;i<size;i++)
-            data[i]=coffee.data[i];
-    }
-    Vector_produs &operator=(const Vector_produs& coffee)
-    {
-        if(coffee.data== nullptr)
-            return *this;
-        for (int i = 0; i < size; i++){
-            data[i].setCoffeeType(coffee.data[i].getCoffeeType())  ;
-        data[i].setCoffeeSize(coffee.data[i].getCoffeeSize())  ;
-        data[i].setCoffeePrice(coffee.data[i].getCoffeePrice()); }
-        return *this;
-    }
-    friend ostream& operator << (ostream& out, const Vector_produs& coffee)
-    {
-        for (int i = 0; i < coffee.size; i++)
-            out << coffee.data[i] << " ";
 
-        return out;
-    }
-    friend istream& operator >> (istream& in, Vector_produs& coffee)
-    {
-        int n = 0;
-        in >> n;
-        if(coffee.data== nullptr)
-            return in;
-        for (int i = 0; i < coffee.size; i++)
-            in >> coffee.data[i];
-        return in;
-    }
-    void addElement(Coffee *element)
-    {
-        Coffee *data1 = nullptr;
-        data1 = new Coffee [size+1];
-        for (int i = 0; i < size; i++)
-            data1[i] = data[i];
-        data1[size].setCoffeeType(element->getCoffeeType())  ;
-        data1[size].setCoffeeSize(element->getCoffeeSize());
-        data1[size].setCoffeePrice(element->getCoffeePrice());
-        if (data != nullptr)
-        {
-            delete[] data;
-            data = nullptr;
+//clasa abstracta
+class Product {
+protected:
+    string Type;
+    double Price;
+public:
+    virtual ~Product(){}
+    virtual void setType(string Type)=0;
+    virtual void setPrice(double Price){
+        if(Price<0) {
+            throw NegativePriceException();
         }
-        data = data1;
-        size++;
     }
-    void afisare(){
-        for(int i=0 ;i<size ;i++)
-            cout<<data[i].getCoffeeType()<<" "<<data[i].getCoffeeSize()<<" "<<data[i].getCoffeePrice();
+    virtual string getType() const=0;
+    virtual double getPrice() const=0;
+};
+class Coffee : public Product {
+protected:
+    string Size;
+public:
+    Coffee():Product(){
+        Type="";
+        Size="";
+        Price=0;
+    }
+    Coffee(string Type,string Size, double Price){
+        this->Type=Type;
+        this->Size=Size;
+        this->Price=Price;
+    }
+    void setType(string Type){
+        this->Type=Type;
+    }
+    string getType() const{
+        return Type;
+    }
+    void setPrice(double Price){
+        if(Price<0)
+            throw NegativePriceException();
+        this->Price=Price;
+    }
+    double getPrice() const{
+        return Price;
+    }
+    void setSize(string Size){
+        this->Size=Size;
+    }
+    string getSize() const{
+        return Size;
     }
 };
-*/
-class Order{
-private:
-    Coffee *coffee;
-    Pastry *pastry;
-    Tea *tea;
-    String client_occupation;
-    double plata;
+//mostenire in diamant
+class FlavouredCoffee: virtual public Product{
+protected:
+    string Size;
+    string Flavour;
+
 public:
-    Order(){
-        coffee= nullptr;
-        pastry= nullptr;
-        tea=nullptr;
-        client_occupation= "";
-        plata=0;
+    FlavouredCoffee():Product(){
+        Type="";
+        Size="";
+        Flavour="";
+        Price=0;
     }
-    void setclient_occupation(String client_occupation){
-        this->client_occupation=client_occupation;
+    FlavouredCoffee(string Type,string Size, string Flavour, double Price){
+        this->Type=Type;
+        this->Size=Size;
+        this->Flavour=Flavour;
+        this->Price=Price;
     }
-    String getclient_occupation(){
-        return client_occupation;
+    FlavouredCoffee(const FlavouredCoffee &other){
+        this->Type=other.Type;
+        this->Size=other.Size;
+        this->Flavour=other.Flavour;
+        this->Price=other.Price;
     }
-    void setcoffee(Coffee *coffee){
-        this->coffee=coffee;
+    void setType(string Type){
+        this->Type=Type;
     }
-    Coffee getcoffee(){
-        return *coffee;
+    string getType() const{
+        return Type;
     }
-    void setpastry(Pastry *pastry){
-        this->pastry=pastry;
+    void setPrice(double Price){
+        if(Price<0)
+            throw NegativePriceException();
+        this->Price=Price;
     }
-    Pastry getpastry(){
-        return *pastry;
+    double getPrice() const{
+        return Price;
     }
-    void settea(Tea *tea){
-        this->tea=tea;
+    void setSize(string Size){
+        this->Size=Size;
     }
-    Tea gettea(){
-        return *tea;
+    string getSize() const{
+        return Size;
     }
-    void Ordering(){
-        cout<<"What would you like to order?"<<"\n";
-        if(coffee!=nullptr) cout<<"I would like to order one "<<coffee->getCoffeeSize()<<" "<<coffee->getCoffeeType()<<"\n";
-        if(pastry!=nullptr) cout<<"I would like to order one "<<pastry->getPastryProduct()<<"\n";
-        if(tea!=nullptr) cout<<"I would like to order one "<<tea->getTeaProduct()<<"\n";
+    void setFlavour(string Flavour){
+        this->Flavour=Flavour;
     }
-    void Paying(){
-        if(coffee!=nullptr) plata+=coffee->getCoffeePrice();
-        if(pastry!=nullptr) plata+=pastry->getPastryPrice();
-        if(tea!=nullptr) plata+=tea->getTeaPrice();
-        cout<<"You have to pay "<<plata<<" lei"<<"\n";
+    string getFlavour(){
+        return Flavour;
     }
-    void PayingDiscount(){
-        if(client_occupation.gasire_subsir("Student"))
-            cout<<"Because you are a student, you have a discount of 15% and your total is "<<plata-plata*15/100<<" lei"<<"\n";
-        else cout<<"Sorry, you cannot have a discount"<<"\n";
+};
+class VegetalMilkCoffee: virtual public Product{
+protected:
+    string Size;
+    string VegetalMilk;
+public:
+    VegetalMilkCoffee():Product(){
+        Type="";
+        Size="";
+        VegetalMilk="";
+        Price=0;
+    }
+    VegetalMilkCoffee(string Type,string Size, string VegetalMilk, double Price){
+        this->Type=Type;
+        this->Size=Size;
+        this->VegetalMilk=VegetalMilk;
+        this->Price=Price;
+    }
+    VegetalMilkCoffee(const VegetalMilkCoffee &other){
+        this->Type=other.Type;
+        this->Size=other.Size;
+        this->VegetalMilk=other.VegetalMilk;
+        this->Price=other.Price;
+    }
+    void setType(string Type){
+        this->Type=Type;
+    }
+    string getType() const{
+        return Type;
+    }
+    void setPrice(double Price){
+        if(Price<0)
+            throw NegativePriceException();
+        this->Price=Price;
+    }
+    double getPrice() const{
+        return Price;
+    }
+    void setSize(string Size){
+        this->Size=Size;
+    }
+    string getSize() const{
+        return Size;
+    }
+    void setVegetalMilk(string VegetalMilk){
+        this->VegetalMilk=VegetalMilk;
+    }
+    string getVegetalMilk(){
+        return VegetalMilk;
+    }
+};
+class FlavouredCoffeeWithVegetalMilk : public FlavouredCoffee, public VegetalMilkCoffee {
+    string Size;
+public:
+    FlavouredCoffeeWithVegetalMilk(): FlavouredCoffee(), VegetalMilkCoffee(){
+        Type="";
+        Size="";
+        Flavour="";
+        VegetalMilk="";
+        Price=0;
+    }
+    FlavouredCoffeeWithVegetalMilk(string Type,string Size, string Flavour, string VegetalMilk, double Price){
+        this->Type=Type;
+        this->Size=Size;
+        this->Flavour=Flavour;
+        this->VegetalMilk=VegetalMilk;
+        this->Price=Price;
+    }
+    void setType(string Type){
+        this->Type=Type;
+    }
+    string getType() const{
+        return Type;
+    }
+    void setPrice(double Price){
+        if(Price<0)
+            throw NegativePriceException();
+        this->Price=Price;
+    }
+    double getPrice() const{
+        return Price;
+    }
+    void setSize(string Size){
+        this->Size=Size;
+    }
+    string getSize() const{
+        return Size;
+    }
+    void setFlavour(string Flavour){
+        this->Flavour=Flavour;
+    }
+    string getFlavour(){
+        return Flavour;
+    }
+    void setVegetalMilk(string VegetalMilk){
+        this->VegetalMilk=VegetalMilk;
+    }
+    string getVegetalMilk(){
+        return VegetalMilk;
+    }
+};
+class Tea : public Product{
+public:
+    Tea():Product(){
+        this->Type="";
+        this->Price=0;
+    }
+    Tea(string Type, double Price){
+        this->Type=Type;
+        this->Price=Price;
+    }
+    Tea(const Tea &other){
+        this->Type=Type;
+        this->Price=Price;
+    }
+    void setType(string Type){
+        this->Type=Type;
+    }
+    string getType() const{
+        return Type;
+    }
+    void setPrice(double Price){
+        if(Price<0)
+            throw NegativePriceException();
+        this->Price=Price;
+    }
+    double getPrice() const{
+        return Price;
+    }
+};
+class Pastry : public Product{
+public:
+    Pastry():Product(){
+        this->Type="";
+        this->Price=0;
+    }
+    Pastry(string Type, double Price){
+        this->Type=Type;
+        this->Price=Price;
+    }
+    Pastry(const Pastry &other){
+        this->Type=Type;
+        this->Price=Price;
+    }
+    void setType(string Type){
+        this->Type=Type;
+    }
+    string getType() const{
+        return Type;
+    }
+    void setPrice(double Price){
+        if(Price<0)
+            throw NegativePriceException();
+        this->Price=Price;
+    }
+    double getPrice() const{
+        return Price;
     }
 };
 
+//functie
+bool CompareProductsByPrice(const Product* pr1, const Product* pr2){
+    return pr1->getPrice()<pr2->getPrice();
+}
+
+//mostenire private
+class Order : private vector<Product*>, public OrderInterface {
+    static int nr_coffee;
+    static int nr_tea;
+    static int nr_pastry;
+public:
+    Order(){}
+    void addProduct(Product* product) {
+        if (!dynamic_cast<Coffee*>(product) && !dynamic_cast<FlavouredCoffee*>(product) && !dynamic_cast<VegetalMilkCoffee*>(product) && !dynamic_cast<FlavouredCoffeeWithVegetalMilk*>(product) && !dynamic_cast<Tea*>(product) && !dynamic_cast<Pastry*>(product)) {
+            throw InvalidProductException();
+        }
+        this->push_back(product);
+        if (dynamic_cast<Coffee*>(product))
+            ++nr_coffee;
+        else if(dynamic_cast<FlavouredCoffee*>(product))
+            ++nr_coffee;
+            else if(dynamic_cast<VegetalMilkCoffee*>(product))
+                ++nr_coffee;
+                else if(dynamic_cast<FlavouredCoffeeWithVegetalMilk*>(product))
+                    ++nr_coffee;
+                    else if (dynamic_cast<Tea*>(product))
+                        ++nr_tea;
+                        else if (dynamic_cast<Pastry*>(product))
+                            ++nr_pastry;
+    }
+    void removeProduct(Product* product) {
+        for (auto it = begin(); it != end(); it++) {
+            bool found=false;
+            if (*it == product) {
+                if (dynamic_cast<Coffee*>(product)) {
+                    delete dynamic_cast<Coffee*>(product);
+                    --nr_coffee;
+                }
+                    else if(dynamic_cast<FlavouredCoffee*>(product)) {
+                        delete dynamic_cast<FlavouredCoffee*>(product);
+                        --nr_coffee;
+                    }
+                        else if(dynamic_cast<VegetalMilkCoffee*>(product)){
+                            delete dynamic_cast<VegetalMilkCoffee*>(product);
+                            --nr_coffee;
+                        }
+                            else if(dynamic_cast<FlavouredCoffeeWithVegetalMilk*>(product)){
+                                delete dynamic_cast<FlavouredCoffeeWithVegetalMilk*>(product);
+                                --nr_coffee;
+                            }
+                                else if (dynamic_cast<Tea*>(product)) {
+                                    delete dynamic_cast<Tea*>(product);
+                                    --nr_tea;
+                                }
+                                    else if (dynamic_cast<Pastry*>(product)) {
+                                        delete dynamic_cast<Pastry*>(product);
+                                        --nr_pastry;
+                                    }
+                found=true;
+                erase(it);
+                break;
+            }
+            if (!found) {
+                throw ProductNotFoundException();
+            }
+        }
+    }
+    double getTotal() {
+        double total=0;
+        for (int i=0;i<this->size();i++) {
+            total+=at(i)->getPrice();
+        }
+        return total;
+    }
+    void printTotal() {
+        if(getTotal()<=0)
+            throw EmptyOrderException();
+        string ocupatie;
+        cout<<"Ce ocupatie aveti?";
+        cin>>ocupatie;
+        if(ocupatie=="Student" || ocupatie=="student" || ocupatie=="STUDENT")
+            cout<<"Deoarece sunteti student, aveti o reducere de 15%. Totalul dumneavostra este: "<<getTotal()-getTotal()*15/100<<"."<<"\n";
+        else cout<<"Deoarece nu sunteti student, nu va putem oferi reducere. Totalul dumneavostra este: "<<getTotal()<<"."<<"\n";
+    }
+    void printOrder(){
+        if(getTotal()<=0)
+            throw EmptyOrderException();
+        //sortare dupa pret
+        sort(this->begin(),this->end(), CompareProductsByPrice);
+        for (int i=0;i<this->size();i++) {
+            cout<<at(i)->getType()<<" ";
+        }
+    }
+    static void printNr_coffee(){
+        cout<<"S-au vandut "<<nr_coffee<<" cafele."<<"\n";
+    }
+    static void printNr_tea(){
+        cout<<"S-au vandut "<<nr_tea<<" ceaiuri."<<"\n";
+    }
+    static void printNr_pastry(){
+        cout<<"S-au vandut "<<nr_pastry<<" produse de patiserie."<<"\n";
+    }
+};
+int Order::nr_coffee=0;
+int Order::nr_tea=0;
+int Order::nr_pastry=0;
 int main()
 {
-    //initializare obiecte tip Coffee
-    Coffee espresso1=Coffee("Espresso","Short",5); //folosim constructorul prin parametri
-    Coffee espresso2=Coffee(espresso1); //folosim copy constructor
-    espresso2.setCoffeeSize("Double"); //folosim setteri
-    espresso2.setCoffeePrice(7);
-    Coffee americano1=Coffee("Americano","Short",6);
-    Coffee americano2=Coffee(americano1);
-    americano2.setCoffeeSize("Double");
-    americano2.setCoffeePrice(8);
-    Coffee cappuccino1=Coffee("Cappuccino","Small",6);
-    Coffee cappuccino2=Coffee(cappuccino1);
-    cappuccino2.setCoffeeSize("Medium");
-    cappuccino2.setCoffeePrice(8);
-    Coffee cappuccino3=Coffee(cappuccino1);
-    cappuccino3.setCoffeeSize("Large");
-    cappuccino3.setCoffeePrice(10);
-    Coffee latte1=Coffee("Caffe Latte","Small",7);
-    Coffee latte2=Coffee(latte1);
-    latte2.setCoffeeSize("Medium");
-    latte2.setCoffeePrice(9);
-    Coffee latte3=Coffee(latte1);
-    latte3.setCoffeeSize("Large");
-    latte3.setCoffeePrice(11);
-    Coffee ice_coffee1=Coffee(); //constructor fara parametri
-    ice_coffee1.setCoffeeType("Ice Coffee");
-    ice_coffee1.setCoffeeSize("Regular");
-    ice_coffee1.setCoffeePrice(cappuccino2.getCoffeePrice()); //getteri
+    //initializam obiecte de tip Coffee
+    Coffee* espresso1=new Coffee("Espresso","Short", 5);
+    Coffee* espresso2=new Coffee(*espresso1); //folosim copyconstructor
+    espresso2->setSize("Double"); //folosim setteri
+    espresso2->setPrice(7);
+    Coffee* americano1=new Coffee("Americano","Short",6);
+    Coffee* americano2=new Coffee(*americano2);
+    americano2->setSize("Double");
+    americano2->setPrice(8);
+    Coffee* cappuccino1=new Coffee("Cappuccino","Small",6);
+    Coffee* cappuccino2=new Coffee(*cappuccino1);
+    cappuccino2->setSize("Medium");
+    cappuccino2->setPrice(8);
+    Coffee* cappuccino3=new Coffee(*cappuccino1);
+    cappuccino3->setSize("Large");
+    cappuccino3->setPrice(10);
+    Coffee* latte1=new Coffee("Caffe Latte","Small",7);
+    Coffee* latte2=new Coffee(*latte1);
+    latte2->setSize("Medium");
+    latte2->setPrice(9);
+    Coffee* latte3=new Coffee(*latte1);
+    latte3->setSize("Large");
+    latte3->setPrice(11);
+    Coffee* ice_coffee1=new Coffee("Ice Coffee","Small",8);
+    Coffee* ice_coffee2=new Coffee("Ice Coffee","Medium",10);
+    Coffee* ice_coffee3=new Coffee("Ice Coffee","Large",12);
+
+    //initializare obiecte de tip FlavouredCoffee
+    FlavouredCoffee* caramel_cappuccino=new FlavouredCoffee("Cappuccino", "Medium", "Caramel", cappuccino2->getPrice()+1);
+    FlavouredCoffee* vanilla_cappuccino=new FlavouredCoffee(*caramel_cappuccino);
+    vanilla_cappuccino->setFlavour("Vanilla");
+
+    //initializare obiecte de tip VegetalMilkCoffee
+    VegetalMilkCoffee* oat_cappuccino=new VegetalMilkCoffee("Cappuccino", "Medium", "Oat", cappuccino2->getPrice()+3);
+    VegetalMilkCoffee* soya_cappuccino=new VegetalMilkCoffee(*oat_cappuccino);
+    soya_cappuccino->setVegetalMilk("Soya");
+
+    //initializare obiecte de tip FlavouredCoffeeWithVegetalMilk
+    FlavouredCoffeeWithVegetalMilk* caramel_oat_cappuccino=new FlavouredCoffeeWithVegetalMilk("Cappuccino", "Medium", "Caramel", "Oat", oat_cappuccino->getPrice()+1);
+    FlavouredCoffeeWithVegetalMilk* caramel_soya_cappuccino=new FlavouredCoffeeWithVegetalMilk(*caramel_oat_cappuccino);
+    caramel_soya_cappuccino->setVegetalMilk("Soya");
 
     //initializare obiecte de tip Pastry
-    Pastry croissant=Pastry("Croissant", 5); //Constructor cu parametri
-    Pastry croissant_cioco=Pastry(); //Constructor fara parametri
-    croissant_cioco.setPastryProduct("Croissant with Nutella"); //folosim setteri
-    croissant_cioco.setPastryPrice(6);
-    Pastry cookie=Pastry();
-    cookie.citire(); //folosim functia de citire
-    Pastry muffin=Pastry();
-    cout<<"Alt produs de patiserie: ";
-    cin>>muffin;
+    Pastry* croissant=new Pastry("Croissant", 5);
+    Pastry* croissant_cioco=new Pastry("Croissant with Nutella",6);
+    Pastry* cookie=new Pastry("Cookie", 5);
+    Pastry* muffin=new Pastry("Muffin",6);
 
     //initializare obiecte de tip Tea
-    Tea tea1=Tea("Black Tea",10); //constructor cu parametri
-    Tea tea2=Tea(); //constructor fara parametri
-    tea2.setTeaProduct("Green Tea"); //setteri
-    tea2.setTeaPrice(tea1.getTeaPrice()); //getteri
-    Tea tea3=Tea();
-    tea3.citire(); //folosim functia de citire
+    Tea* tea1=new Tea("Black Tea",10); //constructor cu parametri
+    Tea* tea2=new Tea(); //constructor fara parametri
+    tea2->setType("Green Tea"); //setteri
+    tea2->setPrice(tea1->getPrice()); //getteri
 
-    //afisari
-    ///afisare obiecte de tip Coffee
-    espresso1.afisare(); //folosim metoda de afisare
-    espresso2.afisare();
-    americano1.afisare();
-    americano2.afisare();
-    cappuccino1.afisare();
-    cappuccino2.afisare();
-    cappuccino3.afisare();
-    latte1.afisare();
-    latte2.afisare();
-    latte3.afisare();
-    cout<<"Sortiment de cafea:"<<" "<<ice_coffee1.getCoffeeType()<<" "<<ice_coffee1.getCoffeeSize()<<" "<<ice_coffee1.getCoffeePrice()<<"\n";
+    //initializare comenzi
+    Order order1;
+    order1.addProduct(espresso1);
+    order1.addProduct(croissant);
+    order1.addProduct(cookie);
+    order1.removeProduct(espresso1);
+    order1.addProduct(cappuccino3);
+    order1.getTotal();
+    order1.printTotal();
+    order1.printOrder();
+    Order::printNr_coffee();
+    Order::printNr_tea();
+    Order::printNr_pastry();
+    Order order2;
 
-    ///afisare obiecte de tip Pastry
-    croissant.afisare(); //folosim metoda de afisare
-    cout<<"Produs de patiserie:"<<" "<<croissant_cioco.getPastryProduct()<<"\n";
-    cookie.afisare();
-    muffin.afisare();
-
-    ///afisare obiecte de tip Tea
-    tea1.afisare(); //metoda de afisare
-    cout<<"Sortiment de ceai: "<<tea2.getTeaProduct()<<"\n";
-    tea3.afisare();
-
-    //construire obiect de tip Order
-    Order comanda1=Order();
-    comanda1.setcoffee(&espresso2);
-    comanda1.setpastry(&muffin);
-    comanda1.settea(&tea1);
-    ///comanda1.setcoffee(&espresso1);
-    ///comanda1.setpastry(&cookie);
-    comanda1.setclient_occupation("Student");
-    comanda1.setclient_occupation("Pensionar");
-    comanda1.Ordering();
-    comanda1.Paying();
-    comanda1.PayingDiscount();
+    //bloc try_catch
+    try{
+        order2.printTotal();
+    }
+    catch (const EmptyOrderException& e){
+        cout<<"Am prins exceptia. "<<e.what()<<"\n";
+    }
+    //bloc try_catch care rearunca o exceptie
+    try{
+        cappuccino2->setPrice(-2);
+    }
+    catch (const NegativePriceException& e){
+        cout<<"Am prins exceptia. "<<e.what()<<"\n";
+        throw InvalidProductException();
+    }
 }
