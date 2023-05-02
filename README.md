@@ -1,5 +1,6 @@
 # Proiect POO- Cafenea☕
-Am ales să gestionez comenzile pentru o **cafenea**. Am utilizat următoarele **clase**: 
+Am ales să gestionez comenzile pentru o **cafenea**. 
+Pentru prima etapa am utilizat următoarele **clase**: 
 - clasa **String**-pentru șiruri de caractere
 - clasa **Coffee**-pentru a memora detalii despre cafea(tipul de cafea, mărimea cafelei, prețul cafelei)
 - clasa **Pastry**-pentru a memora detalii despre un produs de patiserie(tipul de produs, prețul produsului)
