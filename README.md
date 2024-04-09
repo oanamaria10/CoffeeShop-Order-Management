@@ -1,20 +1,42 @@
-# Proiect POO- Cafenea☕
-Am ales să gestionez comenzile pentru o **cafenea**. Am utilizat următoarele **clase**: 
-- clasa **OrderInterface**- este o interfață pentru clasa Order
-- clasa **Product**-este o clasa abstracta pentru produsele cafenelei
-- clasa **Coffee**-pentru a memora detalii despre cafea(tipul de cafea, mărimea cafelei, prețul cafelei)
-- clasa **FlavouredCoffee**-pentru a memora detalii despre cafea cu aromă
-- clasa **VegetalMilkCoffee**-pentru a memora detalii despre cafea cu lapte vegetal
-- clasa **FlavouredCoffeeWithVegetalMilkCoffee**-pentru a memora detalii despre cafea cu aroma și lapte vegetal(utilizând moștenire în diamant)
-- clasa **Pastry**-pentru a memora detalii despre un produs de patiserie(tipul de produs, prețul produsului)
-- clasa **Tea**-pentru a memora detalii despre ceai(tipul de ceai, prețul ceaiului)
-- clasa **Order**-este clasa de comenzi, care moștenește un vector de produse și interfața OrderInterface
-- 4 clase de **excepții** *custom* : **NegativePriceException**, atunci când se setează preț negativ produselor, **ProductNotFoundException**, atunci când se încearcă să se șteargă din comandă un produs inexistent, **InvalidProductException**, atunci când se încearcă să se adauge în comandă un produs care nu e tip Coffee, FlavouredCoffee, VegetalMilkCoffee, FlavouredCoffeeWithVegetalMilkCoffee, Pastry sau Tea, **EmptyOrderException**, atunci când comanda este goală
+# Coffee Shop☕
+Managing orders for a **cafe**. 
+**Classes**:
 
-**Funcționalități** 
-- capabilă să adauge produse în comandă și să șteargă produse din comandă
-- capabilă să calculeze totalul comenzii
-- capabilă să afișeze cât are de plătit clientul
-- capabilă să afișeze comanda sortată după prețul produselor
-- capabilă să ofere o reducere de 15% pentru studenți
-- capabilă să afișeze câte cafele, ceaiuri și produse de patiserie s-au vândut în total
+-**OrderInterface** class - it's an interface for the Order class
+
+-**Product** class - an abstract class for the cafe's products
+
+-**Coffee** class - to store details about coffee (type of coffee, size of coffee, price of coffee)
+
+-**FlavouredCoffee** class - to store details about flavored coffee
+
+-**VegetalMilkCoffee** class - to store details about coffee with plant-based milk
+
+-**FlavouredCoffeeWithVegetalMilkCoffee** class - to store details about flavored coffee with plant-based milk (using diamond inheritance)
+
+-**Pastry** class - to store details about a pastry product (type of product, price of product)
+
+-**Tea** class - to store details about tea (type of tea, price of tea)
+
+-**Order** class - is the order class, which inherits a vector of products and the OrderInterface interface
+
+-4 *custom* exception classes: **NegativePriceException**, when setting negative prices for products, **ProductNotFoundException**, when attempting to delete a nonexistent product from the order, **InvalidProductException**, when attempting to add a product to the order that is not of type Coffee, FlavouredCoffee, VegetalMilkCoffee, FlavouredCoffeeWithVegetalMilkCoffee, Pastry, or Tea, **EmptyOrderException**, when the order is empty
+
+
+# **Functionalities**
+
+-able to add products to the order and delete products from the order
+
+-able to calculate the total of the order
+
+-able to display how much the customer needs to pay
+
+-able to display the order sorted by the price of the products
+
+-able to offer a 15% discount for students
+
+-able to display how many coffees, teas, and pastry products have been sold in total
+
+
+
+
